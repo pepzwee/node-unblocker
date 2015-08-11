@@ -1,34 +1,31 @@
 {
-  "name": "node-unblocker",
-  "description": "Web proxy for evading internet censorship",
+  "name": "unblocker",
+  "description": "Web proxy for evading internet censorship & general-purpose library for rewriting remote websites.",
   "author": "Nathan Friedly - http://nfriedly.com",
-  "version": "0.13.1",
+  "version": "1.0.6",
   "repository": "git://github.com/nfriedly/node-unblocker.git",
-  "dependencies": {
-    "redis-url": "0.1.x",
-    "redis": "0.8.x",
-    "connect": "2.7.x",
-    "connect-redis": "1.4.x",
-    "iconv": "2.0.x",
-    "underscore": "~1.5.2",
-    "through": "~2.3.4",
-    "async": "~0.2.9",
-    "mime": "~1.2.11",
-    "newrelic": "~1.1.1",
-    "gatling": "~1.1.1"
+  "engines" : {
+    "node" : ">=0.12"
   },
-  "engines": {
-    "node": "0.10.x",
-    "npm": "1.4.x"
+  "dependencies": {
+    "async": "^1.3.0",
+    "content-type": "^1.0.1",
+    "cookie": "^0.1.3",
+    "debug": "^2.2.0",
+    "iconv-lite": "^0.4.10",
+    "lodash": "^3.10.0",
+    "mime": "^1.3.4",
+    "set-cookie-parser": "^1.0.1",
+    "through": "~2.3.4",
+    "tld": "0.0.2"
   },
   "devDependencies": {
-    "concat-stream": "~1.2.0",
-    "tap": "~0.4.6",
-    "hyperquest": "~0.1.8",
+    "concat-stream": "^1.5.0",
+    "hyperquest": "^1.2.0",
+    "js-beautify": "^1.5.10",
+    "jshint": "^2.8.0",
     "math-helpers": "~0.1.0",
-    "taskgroup": "~3.3.2",
-    "jshint": "~2.3.0",
-    "js-beautify": "~1.4.2"
+    "tap": "^1.3.1"
   },
   "jshintConfig": {
     "undef": true,
@@ -43,13 +40,13 @@
     "camelcase": true
   },
   "scripts": {
-    "start": "./node_modules/gatling/gatling.js --threads 2 ./app.js",
     "test": "npm run jshint && npm run test-spec",
     "pre-commit": "npm run beautify && npm test",
-    "beautify": "js-beautify --replace ./*.js ./lib/*.js ./test/*.js",
-    "jshint": "jshint ./ --exclude node_modules/",
+    "beautify": "js-beautify --end-with-newline --replace ./lib/*.js ./test/*.js",
+    "jshint": "jshint ./lib ./test",
     "test-spec": "tap test/*_spec.js",
     "test-perf": "node test/performance.js"
   },
-  "subdomain": "node-unblocker"
+  "license": "AGPL-3.0",
+  "main": "lib/unblocker.js"
 }
