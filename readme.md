@@ -7,6 +7,8 @@ All data is processed and relayed to the client on the fly without unnecessary b
 fastest web proxies available.
 
 [![Build Status](https://travis-ci.org/nfriedly/node-unblocker.png?branch=master)](https://travis-ci.org/nfriedly/node-unblocker)
+[![Dependency Status](https://david-dm.org/nfriedly/node-unblocker.svg)](https://david-dm.org/nfriedly/node-unblocker)
+[![npm-version](https://img.shields.io/npm/v/unblocker.svg)](https://www.npmjs.com/package/unblocker)
 
 ### The magic part
 
@@ -30,7 +32,7 @@ fixes to go in the examples folder.
 
 ## Running the website on your computer
 
-Requires [node.js](http://nodejs.org/) >= 0.12.
+Requires [node.js](http://nodejs.org/) >=4.3
 Then [download node-unblocker](https://github.com/nfriedly/node-unblocker/archive/master.zip), 
 `cd` into the `examples/nodeunblocker.com/` directory, 
 and run `npm install` to set things up. 
@@ -46,6 +48,8 @@ This project should be runnable on a free [Heroku](http://www.heroku.com/) insta
 modification - just copy the `examples/nodeunblocker.com/` folder to a new git repo and push it.
 
 ## Using unblocker as a library in your software
+
+    npm install --save unblocker
 
 Unblocker exports an [express](http://expressjs.com/)-compatible API, so using in an express application is trivial:
 
@@ -84,20 +88,26 @@ Unblocker supports the following configuration options, defaults are shown:
 
 #### Custom Middleware
 
+Unblocker "middleware" are small functions that allow you to inspect and modify requests and responses. The majority of Unblocker's internal logic is implimented as middleware, and it's possible to write custom middleware to augment or replace the built-in middleware.
+
 Custom middleware should be a function that accepts a single `data` argument and runs synchronously. 
+
+To process request and response data, create a [Transform Stream](https://nodejs.org/api/stream.html#stream_class_stream_transform) to perform the processing in chunks and pipe through this stream. (Example below.)
+
+To respond directly to a request, add a function to `config.requestMiddleware` that handles the `clientResponse` (a standard [http.ServerResponse](https://nodejs.org/api/http.html#http_class_http_serverresponse) when used directly, or a [Express Response](http://expressjs.com/en/4x/api.html#res) when used with Express. Once a response is sent, no further middleware will be executed for that request. (Example below.)
 
 ##### requestMiddleware
 
 Data example:
 ```js
 {
-    url: 'http://example.com',
+    url: 'http://example.com/',
     clientRequest: {request},
     clientResponse: {response},
     headers: {
         //...
     },
-    stream: {stream of data for PUT/POST requests, empty stream for other types}
+    stream: {ReadableStream of data for PUT/POST requests, empty stream for other types}
 }
 ```
 
@@ -128,7 +138,7 @@ responseMiddleware receives the same `data` object as the requestMiddleware, but
 Data example:
 ```js
 {
-    url: 'http://example.com',
+    url: 'http://example.com/',
     clientRequest: {request},
     clientResponse: {response},
     remoteRequest {request},
@@ -137,19 +147,25 @@ Data example:
     headers: {
         //...
     },
-    stream: {stream of response data}
+    stream: {ReadableStream of response data}
 }
 ```
 
 For modifying content, create a new stream and then pipe `data.stream` to it and replace `data.stream` with it:
 
 ```js
-var through = require('through');
+var Transform = require('stream').Transform;
 
 function injectScript(data) {
     if (data.contentType == 'text/html') {
-        var myStream = through(function(chunk) {
-            this.queue(chunk.replace('</body>', '<script src="/my/script.js"></script></body>'));
+    
+        // https://nodejs.org/api/stream.html#stream_transform
+        var myStream = new Transform({
+            decodeStrings: false, 
+            function(chunk, encoding, next) {
+                chunk = chunk.toString.replace('</body>', '<script src="/my/script.js"></script></body>');
+                this.push(chunk);
+                next();
         });
         
         data.stream = data.stream.pipe(myStream);
@@ -260,6 +276,13 @@ function to report on changes. It's included with the default DEBUG activation a
 ... or disabled:
 
     DEBUG=*,-unblocker:middleware node mycoolapp.js
+
+## Troubleshooting
+
+If you're using Nginx as a reverse proxy, you probably need to disable `merge_slashes` to avoid endless redirects and/or other issues:
+
+    merge_slashes off;
+
 
 ## Todo
 

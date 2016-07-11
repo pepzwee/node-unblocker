@@ -47,7 +47,7 @@ test("should return control to parent when route doesn't match and no referer is
     });
 });
 
-test("should should redirect root-relative urls when the correct target can be determined from the referer header", function(t) {
+test("should redirect root-relative urls when the correct target can be determined from the referer header", function(t) {
 
     getServers(source, function(err, servers) {
         function cleanup() {
@@ -69,7 +69,7 @@ test("should should redirect root-relative urls when the correct target can be d
 });
 
 
-test("should should redirect root-relative urls when the correct target can be determined from the referer header including for urls that the site is already serving content on", function(t) {
+test("should redirect root-relative urls when the correct target can be determined from the referer header including for urls that the site is already serving content on", function(t) {
     getServers(source, function(err, servers) {
         function cleanup() {
             servers.kill(function() {
@@ -88,3 +88,37 @@ test("should should redirect root-relative urls when the correct target can be d
         });
     });
 });
+
+
+test("should redirect http urls that have had the slashes merged (http:/ instead of http://", function(t) {
+    getServers(source, function(err, servers) {
+        function cleanup() {
+            servers.kill(function() {
+                t.end();
+            });
+        }
+        hyperquest(servers.proxiedUrl.replace('/proxy/http://','/proxy/http:/'), function(err, res) {
+            t.notOk(err);
+            t.equal(res.statusCode, 307, 'http status code');
+            t.equal(res.headers.location, servers.proxiedUrl, 'redirect location');
+            cleanup();
+        });
+    });
+});
+
+test("should redirect http urls that have had the have two occurrences of /prefix/http://", function(t) {
+    getServers(source, function(err, servers) {
+        function cleanup() {
+            servers.kill(function() {
+                t.end();
+            });
+        }
+        hyperquest(servers.proxiedUrl.replace('/proxy/http://','/proxy/http://proxy/http://'), function(err, res) {
+            t.notOk(err);
+            t.equal(res.statusCode, 307, 'http status code');
+            t.equal(res.headers.location, servers.proxiedUrl, 'redirect location');
+            cleanup();
+        });
+    });
+});
+
