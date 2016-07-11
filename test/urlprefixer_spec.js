@@ -14,6 +14,9 @@ var testLines = {
     '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-us">': '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-us">',
     '<head xmlns:og="http://ogp.me/ns#" xmlns:fb="http://ogp.me/ns/fb#">': '<head xmlns:og="http://ogp.me/ns#" xmlns:fb="http://ogp.me/ns/fb#">',
 
+    '<META HTTP-EQUIV="Refresh" CONTENT="0;URL=http://example.com/meta-refresh">': '<META HTTP-EQUIV="Refresh" CONTENT="0;URL=/proxy/http://example.com/meta-refresh">',
+    '<META HTTP-EQUIV=\'Refresh\' CONTENT=\'0;URL=http://example.com/meta-refresh\'>': '<META HTTP-EQUIV=\'Refresh\' CONTENT=\'0;URL=/proxy/http://example.com/meta-refresh\'>',
+
     '<link rel="stylesheet" href="http://example.com/styles.css"/>': '<link rel="stylesheet" href="/proxy/http://example.com/styles.css"/>',
     '<link rel="stylesheet" href="https://example.com/styles.css"/>': '<link rel="stylesheet" href="/proxy/https://example.com/styles.css"/>',
     '<link rel="stylesheet" href="//example.com/styles.css"/>': '<link rel="stylesheet" href="/proxy/http://example.com/styles.css"/>',
