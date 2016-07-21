@@ -2,7 +2,7 @@ var fs = require('fs'),
     concat = require('concat-stream'),
     test = require('tap').test,
     hyperquest = require('hyperquest'),
-    getServers = require('./test_utils.js').getServers;
+    getServers = require('./test_utils.js').getServers,
     getDomainPrefixServers = require('./test_utils_domain_prefix.js').getServers;
 
 var source = fs.readFileSync(__dirname + '/source/index.html');
