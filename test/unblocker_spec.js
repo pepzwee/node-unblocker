@@ -2,10 +2,12 @@ var fs = require('fs'),
     concat = require('concat-stream'),
     test = require('tap').test,
     hyperquest = require('hyperquest'),
-    getServers = require('./test_utils.js').getServers;
+    getServers = require('./test_utils.js').getServers,
+    getDomainPrefixServers = require('./test_utils_domain_prefix.js').getServers;
 
 var source = fs.readFileSync(__dirname + '/source/index.html');
 var expected = fs.readFileSync(__dirname + '/expected/index.html');
+var expectedDomainPrefix = fs.readFileSync(__dirname + '/expectedDomainPrefix/index.html');
 
 
 test("url_rewriting should support support all kinds of links", function(t) {
@@ -27,6 +29,31 @@ test("url_rewriting should support support all kinds of links", function(t) {
     });
 });
 
+test("url_rewriting domainprefix should support support all kinds of links", function(t) {
+    getDomainPrefixServers(source, function(err, servers) {
+        if(err) {
+            console.error(err);
+            return;
+        }
+        function cleanup() {
+            servers.kill(function() {
+                t.end();
+            });
+        }
+        console.log(servers.proxiedUrl);
+        console.log(servers.proxiedUrl);
+        console.log(servers.proxiedUrl);
+        hyperquest(servers.proxiedUrl)
+            .pipe(concat(function(data) {
+                t.equal(data.toString(), expectedDomainPrefix.toString().replace(/<remotePort>/g, servers.remotePort));
+                cleanup();
+            }))
+            .on('error', function(err) {
+                console.error('error retrieving data from proxy', err);
+                cleanup();
+            });
+    });
+});
 
 test("should return control to parent when route doesn't match and no referer is sent", function(t) {
     getServers(source, function(err, servers) {
@@ -121,4 +148,3 @@ test("should redirect http urls that have had the have two occurrences of /prefi
         });
     });
 });
-

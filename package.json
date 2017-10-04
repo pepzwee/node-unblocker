@@ -8,9 +8,9 @@
     "node": ">=4.3"
   },
   "dependencies": {
-    "async": "^2.0.0",
+    "acorn": "^3.3.0",
+    "async": "^2.0.2",
     "content-type": "^1.0.1",
-    "cookie": "^0.3.1",
     "debug": "^2.2.0",
     "iconv-lite": "^0.4.13",
     "lodash": "^4.4.0",
@@ -22,10 +22,17 @@
     "concat-stream": "^1.5.1",
     "hyperquest": "^2.0.0",
     "js-beautify": "^1.6.2",
+<<<<<<< HEAD
     "jshint": "^2.9.1",
     "math-helpers": "~0.1.0",
     "nodemon": "^1.9.0",
     "tap": "^10.0.0"
+=======
+    "jshint": "^2.9.2",
+    "math-helpers": "^0.1.0",
+    "nodemon": "^1.9.2",
+    "tap": "^6.1.1"
+>>>>>>> b285afc8b9017b2621cc9c2b60fb6a752ca2a343
   },
   "jshintConfig": {
     "undef": true,
